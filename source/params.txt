@@ -1,0 +1,1 @@
+{'merged_1_size': 126, 'merged_2_size': 97, 'merged_3_size': 58, 'merged_1_dropout': 0.4338653064187811, 'merged_2_dropout': 0.1843705791486809, 'merged_3_dropout': 0.252610620944293, 'learning_rate': 0.0005802932333170377}accuracy: 0.8821292775665399
