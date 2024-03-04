@@ -40,7 +40,7 @@ def correlation(dataset, threshold):
     return col_corr
 
 
-BASE_PATH = 'data/ROSMAP/'
+BASE_PATH = '../data/ROSMAP/'
 methy_path = os.path.join(BASE_PATH, 'methy.csv')
 mirna_path = os.path.join(BASE_PATH, 'mirna.csv')
 mrna_path = os.path.join(BASE_PATH, 'mrna.csv')
@@ -80,8 +80,8 @@ methy_test_scaled = scaler_methy.transform(methy_test_df)
 mirna_train_scaled = scaler_mirna.fit_transform(mirna_train_df)
 mirna_test_scaled = scaler_mirna.transform(mirna_test_df)
 
-mrna_train_scaled = scaler_mrna.fit_transform(mrna_train_df)
-mrna_test_scaled = scaler_mrna.transform(mrna_test_df)
+# mrna_train_scaled = scaler_mrna.fit_transform(mrna_train_df)
+# mrna_test_scaled = scaler_mrna.transform(mrna_test_df)
 
 def create_branch(input_layer):
     dense_methy = Dense(128, activation='relu', kernel_regularizer=regularizers.l1(0.001))(input_layer)
@@ -104,11 +104,11 @@ def get_model(trial):
 
     input_methy = Input(shape=(methy_train_scaled.shape[1],), name='methy')
     input_mirna = Input(shape=(mirna_train_scaled.shape[1],), name='mirna')
-    input_mrna = Input(shape=(mrna_train_scaled.shape[1],), name='mrna')
+    # input_mrna = Input(shape=(mrna_train_scaled.shape[1],), name='mrna')
     methy_branch = create_branch(input_methy)
     mirna_branch = create_branch(input_mirna)
-    mrna_branch = create_branch(input_mrna)
-    merged = Concatenate()([methy_branch, mirna_branch, mrna_branch])
+    # mrna_branch = create_branch(input_mrna)
+    merged = Concatenate()([methy_branch, mirna_branch])
     merged_dense = Dense(merged_1_size, activation='relu', kernel_regularizer=regularizers.l1(0.001),name = "merged_1" )(merged)
     merged_dense = Dropout(merged_1_dropout)(merged_dense)
     merged_dense = Dense(merged_2_size, activation='relu', kernel_regularizer=regularizers.l1(0.001), name = "merged_2")(merged_dense)
@@ -120,7 +120,7 @@ def get_model(trial):
 
     output = Dense(1, activation='sigmoid', name = "merged_out")(merged_dense)
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    model = Model(inputs=[input_methy, input_mirna, input_mrna], outputs=output)
+    model = Model(inputs=[input_methy, input_mirna], outputs=output)
     model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
     return model
 
@@ -128,19 +128,19 @@ def get_model(trial):
 best_accuracy = 0
 def objective(trial):
     model = get_model(trial)
-    history = model.fit([methy_train_scaled, mirna_train_scaled, mrna_train_scaled], 
+    history = model.fit([methy_train_scaled, mirna_train_scaled], 
           methy_y_train, 
           epochs=500, 
           batch_size=32, 
-          validation_data=([methy_test_scaled, mirna_test_scaled, mrna_test_scaled], methy_y_test),
+          validation_data=([methy_test_scaled, mirna_test_scaled], methy_y_test),
           callbacks=[EarlyStopping(monitor= 'val_loss', patience=50, restore_best_weights=True)])
-    y_pred = model.predict([methy_test_scaled, mirna_test_scaled, mrna_test_scaled])
+    y_pred = model.predict([methy_test_scaled, mirna_test_scaled])
     y_pred = np.where(y_pred > 0.5, 1, 0)
     acc = accuracy_score(methy_y_test, y_pred)
     #save the best model 
     global best_accuracy
     if acc > best_accuracy:
-        model.save('best_model.h5')
+        model.save('ROSMAP_2_modality_weights.h5')
         with open("params.txt", "w") as f:
             f.write(str(trial.params))
             f.write(f"accuracy: {acc}")
@@ -154,4 +154,4 @@ if __name__ == "__main__":
     study = optuna.create_study(direction="maximize", sampler=sampler)
     study.optimize(objective, n_trials=1500)
     trials_df = study.trials_dataframe()
-    trials_df.to_csv("new_trials.csv")
+    trials_df.to_csv("ROSMAP_2_modality_trials.csv")
