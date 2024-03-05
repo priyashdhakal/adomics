@@ -1,1 +1,1 @@
-{'merged_1_size': 247, 'merged_2_size': 104, 'merged_3_size': 46, 'merged_1_dropout': 0.49755083062611494, 'merged_2_dropout': 0.19975452976277375, 'merged_3_dropout': 0.4616364018251981, 'learning_rate': 0.0006450898381415978}accuracy: 0.8679245283018868
+{'merged_1_size': 203, 'merged_2_size': 89, 'merged_3_size': 47, 'merged_1_dropout': 0.41798517711548216, 'merged_2_dropout': 0.4270170327035739, 'merged_3_dropout': 0.2897943054700885, 'learning_rate': 0.0020337078030514904}accuracy: 0.8962264150943396
