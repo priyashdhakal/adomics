@@ -4,6 +4,8 @@ import os
 import logging
 logging.getLogger().setLevel(logging.INFO)
 from sklearn.preprocessing import StandardScaler
+import tqdm
+from tqdm import trange
 
 def get_df():
     base_path = args.DataSetArguments.data_root
@@ -12,6 +14,7 @@ def get_df():
         file_path = os.path.join(base_path, f"{args.DataSetArguments.data_type}/{feature}.csv")
         if not os.path.exists(file_path):
             raise Exception('File not found')
+        logging.info(f"Reading {file_path}")
         df = pd.read_csv(file_path, index_col=0)
         df_dict[feature] = df
     return df_dict
@@ -26,7 +29,7 @@ def get_train_test(df):
 def correlation(dataset, threshold):
     col_corr = set()  # Set of all the names of correlated columns
     corr_matrix = dataset.corr()
-    for i in range(len(corr_matrix.columns)):
+    for i in trange(len(corr_matrix.columns)):
         for j in range(i):
             if abs(corr_matrix.iloc[i, j]) > threshold: # we are interested in absolute coeff value
                 colname = corr_matrix.columns[i]  # getting the name of column
@@ -35,6 +38,7 @@ def correlation(dataset, threshold):
 
 def preprocess_data(df):
     train_df, test_df, y_train, y_test = get_train_test(df)
+    logging.info("finding correlation")
     corr_features = correlation(train_df, 0.85)
     logging.info(f'Correlated features: {len(corr_features)}')
     train_df.drop(corr_features, axis=1, inplace=True)

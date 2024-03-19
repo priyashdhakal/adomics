@@ -18,7 +18,7 @@ class DataSetArguments:
     But take care of things like n_classes that should be written according to the outputs of the dataset. 
     For example, in the case of ROSMAP it is 1 (i.e binary classification)
     """
-    data_type:str = "ROSMAP"
+    data_type:str = "KIRP"
     if data_type not in allowed_data_types:
         raise ValueError(f"Data type must be one of {allowed_data_types}")
     n_classes:int = 1
@@ -34,8 +34,8 @@ class ModelArguments:
 
 @dataclass
 class TrainingArguments:
-    train:bool = False
-    epochs:int = 5
+    train:bool = True
+    epochs:int = 500
     batch_size:int = 32
 
     # callback arguments: 
@@ -47,7 +47,7 @@ class TrainingArguments:
 @dataclass 
 class OptunaArguments:
     use_optuna:bool = True 
-    n_trials:int = 5
+    n_trials:int = 1000
     feature_names_str = "_".join(DataSetArguments.feature_names)
     weights_path_root:str = f"logs/logs_{DataSetArguments.data_type}_{feature_names_str}"
     direction:str = "maximize"

@@ -83,6 +83,8 @@ def train_model(dataset_dict, hparams_dict):
         best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, "best_params.json")
         with open(best_params_filepath, "w") as f:
             json.dump(hparams_dict, f)
+            f.write(f"accuracy: {acc}")
+        BEST_ACCURACY = acc
     logging.info(f"Accuracy: {acc}")
     return acc
     
