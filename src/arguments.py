@@ -4,15 +4,15 @@ import json
 import os 
 import tensorflow as tf
 # set cuda visible devices 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-  try:
-    tf.config.experimental.set_virtual_device_configuration(
-        gpus[0],[tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
-  except RuntimeError as e:
-    print(e)
+# gpus = tf.config.experimental.list_physical_devices('GPU')
+# if gpus:
+#   try:
+#     tf.config.experimental.set_virtual_device_configuration(
+#         gpus[0],[tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
+#   except RuntimeError as e:
+#     print(e)
 
 
 allowed_data_types = [
@@ -21,6 +21,9 @@ allowed_data_types = [
     "KIRC",
     "LUSC",
     "ROSMAP",
+    "LUAD",
+    "UCEC",
+    "THCA"
 ]
 @dataclass
 class DataSetArguments:
@@ -30,11 +33,11 @@ class DataSetArguments:
     But take care of things like n_classes that should be written according to the outputs of the dataset. 
     For example, in the case of ROSMAP it is 1 (i.e binary classification)
     """
-    data_type:str = "LUSC"
+    data_type:str = "BRCA"
     if data_type not in allowed_data_types:
         raise ValueError(f"Data type must be one of {allowed_data_types}")
-    n_classes:int = 1
-    data_root:str = "../data"
+    n_classes:int = 5
+    data_root:str = "/home/dhakal/MoBI/data"
     feature_names = ["methy", "mirna", "mrna"]
 
 @dataclass
@@ -61,7 +64,7 @@ class OptunaArguments:
     use_optuna:bool = True 
     n_trials:int = 10000
     feature_names_str = "_".join(DataSetArguments.feature_names)
-    weights_path_root:str = f"logs/logs_{DataSetArguments.data_type}_{feature_names_str}"
+    weights_path_root:str = f"/home/dhakal/MoBI/src/logs/logs_{DataSetArguments.data_type}_{feature_names_str}"
     direction:str = "maximize"
 
 class PlotUtilArguments:

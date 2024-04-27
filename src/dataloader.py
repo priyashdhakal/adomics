@@ -69,7 +69,7 @@ def get_train_test_data():
     df_dict = get_df()
     train_test_data = {}
     for feature, df in df_dict.items():
-        train_scaled, test_scaled, y_train, y_test = preprocess_data(df)
+        train_scaled, test_scaled, y_train, y_test = preprocess_data(df, feature_name = feature)
         train_test_data[feature] = (train_scaled, test_scaled, y_train, y_test)
     return train_test_data
 if __name__ == "__main__":
