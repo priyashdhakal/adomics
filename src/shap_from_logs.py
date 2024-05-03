@@ -38,7 +38,7 @@ def get_shap_values(model, dataset_dict):
     explainer.explainer.multi_input, explainer.explainer.multi_output = True, False
     shap_values = explainer.shap_values([dataset_dict[key_values[0]][1],
                                          dataset_dict[key_values[1]][1],
-                                         dataset_dict[key_values[2]][1]])
+                                         dataset_dict[key_values[2]][1]], check_additivity=False)
     plot = shap.summary_plot(shap_values[0], dataset_dict[key_values[0]][1], show = False)
     logging.info(f"Saving SHAP for dataset {key_values[0]} and index {PLOT_INDEX}")
     plt.savefig(os.path.join(args.PlotUtilArguments.plot_dir, f"plot_{PLOT_INDEX}.png"))
