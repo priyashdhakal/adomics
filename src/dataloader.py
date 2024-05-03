@@ -30,7 +30,7 @@ def get_train_test(df):
 def get_cache_filepath(feature_name):
     data_type = args.DataSetArguments.data_type
     cache_filename = f"{data_type}_{feature_name}_corr.pkl"
-    cache_root = "cache"
+    cache_root = "/home/dhakal/MoBI/src/cache" #TODO: Fix this to get from  arguments.py
     cache_filepath = os.path.join(cache_root, cache_filename)
     return cache_filepath
 
@@ -60,18 +60,21 @@ def preprocess_data(df, feature_name):
     logging.info(f'Correlated features: {len(corr_features)}')
     train_df.drop(corr_features, axis=1, inplace=True)
     test_df.drop(corr_features, axis=1, inplace=True)
+    biomarker_names_arr = test_df.columns.to_list()
     scaler = StandardScaler()
     train_scaled = scaler.fit_transform(train_df)
     test_scaled = scaler.transform(test_df)
-    return train_scaled, test_scaled, y_train, y_test
+    return train_scaled, test_scaled, y_train, y_test, biomarker_names_arr
 
 def get_train_test_data():
     df_dict = get_df()
     train_test_data = {}
+    biomarker_names_dict = {}
     for feature, df in df_dict.items():
-        train_scaled, test_scaled, y_train, y_test = preprocess_data(df, feature_name = feature)
+        train_scaled, test_scaled, y_train, y_test, biomarker_names_arr = preprocess_data(df, feature_name = feature)
         train_test_data[feature] = (train_scaled, test_scaled, y_train, y_test)
-    return train_test_data
+        biomarker_names_dict[feature] = biomarker_names_arr
+    return train_test_data, biomarker_names_dict
 if __name__ == "__main__":
     df_dict = get_df()
     for feature, df in df_dict.items():

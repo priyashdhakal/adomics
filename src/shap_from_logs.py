@@ -28,7 +28,7 @@ def load_model(dataset_dict, hparams_dict):
     model.load_weights(weights_path)
     return model
 
-def get_shap_values(model, dataset_dict):
+def get_shap_values(model, dataset_dict, biomarker_names_dict):
     key_values = list(dataset_dict.keys())
     print(f"Key Values: {key_values}")
     explainer = shap.DeepExplainer(model, 
@@ -39,16 +39,18 @@ def get_shap_values(model, dataset_dict):
     shap_values = explainer.shap_values([dataset_dict[key_values[0]][1],
                                          dataset_dict[key_values[1]][1],
                                          dataset_dict[key_values[2]][1]], check_additivity=False)
-    plot = shap.summary_plot(shap_values[0], dataset_dict[key_values[0]][1], show = False)
-    logging.info(f"Saving SHAP for dataset {key_values[0]} and index {PLOT_INDEX}")
-    plt.savefig(os.path.join(args.PlotUtilArguments.plot_dir, f"plot_{PLOT_INDEX}.png"))
+    for i, feature_name in enumerate(biomarker_names_dict.keys()):
+        plot = shap.summary_plot(shap_values[i], dataset_dict[key_values[i]][1], feature_names = biomarker_names_dict[feature_name], show = False)
+        logging.info(f"Saving SHAP for dataset {key_values[i]} and index {PLOT_INDEX} and feature: {feature_name}")
+        plt.savefig(os.path.join(args.PlotUtilArguments.plot_dir, f"plot_{PLOT_INDEX}_{feature_name}.png"))
+        plt.close()
     return shap_values
 
 if __name__ == "__main__":
 
-    dataset_dict = dataloader.get_train_test_data()
+    dataset_dict, biomarker_names_dict  = dataloader.get_train_test_data()
     hparams_dict = get_hparams()
     model = load_model(dataset_dict, hparams_dict)
-    shap_values = get_shap_values(model, dataset_dict)
+    shap_values = get_shap_values(model, dataset_dict, biomarker_names_dict)
 
     print(shap_values[1].shape, len(shap_values))
