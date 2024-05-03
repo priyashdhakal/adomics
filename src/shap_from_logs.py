@@ -5,10 +5,13 @@ import os
 import shap 
 import numpy as np
 import matplotlib.pyplot as plt
+import keras
+from sklearn.metrics import accuracy_score
 
 import arguments as args
 import dataloader 
 from model import get_model
+import PlotUtils as plots
 
 import json
 import logging 
@@ -46,11 +49,29 @@ def get_shap_values(model, dataset_dict, biomarker_names_dict):
         plt.close()
     return shap_values
 
-if __name__ == "__main__":
+def get_predictions(model, dataset_dict):
+    val_x_arr = []
+    for feature_name in args.DataSetArguments.feature_names:
+        if feature_name not in dataset_dict:
+            raise ValueError(f"Feature {feature_name} not found in dataset_dict")
+        val_x_arr.append(dataset_dict[feature_name][1])
+    val_y_arr = dataset_dict[args.DataSetArguments.feature_names[0]][3]
+    if args.DataSetArguments.n_classes > 1:
+        val_y_arr = keras.utils.to_categorical(val_y_arr, args.DataSetArguments.n_classes)
+    y_pred = model.predict(val_x_arr)
+    y_pred = np.where(y_pred > 0.5, 1, 0) 
+    if args.DataSetArguments.n_classes > 1:
+        val_y_arr = np.argmax(val_y_arr,axis=1)
+        y_pred = np.argmax(y_pred,axis=1)
+    acc = accuracy_score(val_y_arr, y_pred)
+    logging.info(f"Accuracy: {acc}")
+    plots.plot_confusion_matrix(val_y_arr, y_pred)
 
+if __name__ == "__main__":
     dataset_dict, biomarker_names_dict  = dataloader.get_train_test_data()
     hparams_dict = get_hparams()
     model = load_model(dataset_dict, hparams_dict)
+    get_predictions(model, dataset_dict)
     shap_values = get_shap_values(model, dataset_dict, biomarker_names_dict)
 
     print(shap_values[1].shape, len(shap_values))
