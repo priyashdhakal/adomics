@@ -22,6 +22,7 @@ PLOT_INDEX = 0
 
 def get_hparams():
     weights_path_root = args.OptunaArguments.weights_path_root
+    logging.info("Loading hparams from : " + os.path.join(weights_path_root, "best_params.json"))
     hparams_dict = json.load(open(os.path.join(weights_path_root, "best_params.json")))
     return hparams_dict
 def load_model(dataset_dict, hparams_dict):

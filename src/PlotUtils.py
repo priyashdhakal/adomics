@@ -38,6 +38,8 @@ def plot_history(history):
 
 def plot_confusion_matrix(y_true, y_pred):
     cm = confusion_matrix(y_true, y_pred)
+    with open(os.path.join(plots_dir, "confusion_matrix.txt"), "w") as f:
+        f.write(str(cm))
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
     plt.savefig(os.path.join(plots_dir, "confusion_matrix.png"))
