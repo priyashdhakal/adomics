@@ -39,6 +39,6 @@ def get_model(dataset_dict, hparams_dict:dict):
     )(merged_dense)
     optimizer = args.ModelArguments.optimizer(learning_rate=hparams_dict["learning_rate"])
     model = Model(inputs=feature_input_arr, outputs=output)
-    model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=optimizer, loss=args.ModelArguments.loss, metrics=['accuracy'])
     logging.info("Model compiled")
     return model
