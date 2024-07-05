@@ -40,8 +40,9 @@ def get_shap_values(model, dataset_dict, biomarker_names_dict):
     #                                   dataset_dict[key_values[1]][1],
     #                                   dataset_dict[key_values[2]][1]])
     dataset_arr_dict = []
+    key_values_idx = 1 # 0 = train data, so ignore
     for i, _ in enumerate(biomarker_names_dict.keys()):
-        dataset_arr_dict.append(dataset_dict[key_values[i]][1])
+        dataset_arr_dict.append(dataset_dict[key_values[i]][key_values_idx])
 
     explainer = shap.DeepExplainer(model, dataset_arr_dict)
     explainer.explainer.multi_input, explainer.explainer.multi_output = True, False
@@ -53,7 +54,7 @@ def get_shap_values(model, dataset_dict, biomarker_names_dict):
     for i, feature_name in enumerate(biomarker_names_dict.keys()):
         #IMP: Change returning feature names in line 963 of _beeswarm.py to return feature names
         # else, it will return nothing
-        feature_names = shap.summary_plot(shap_values[i], dataset_dict[key_values[i]][1], feature_names = biomarker_names_dict[feature_name], show = False, show_values_in_legend = True)
+        feature_names = shap.summary_plot(shap_values[i], dataset_dict[key_values[i]][key_values_idx], feature_names = biomarker_names_dict[feature_name], show = False, show_values_in_legend = True)
         logging.info(f"Saving Feature Names: ")
         feature_names_save_path = os.path.join(args.PlotUtilArguments.plot_dir, f"feature_names_{PLOT_INDEX}_{feature_name}.txt")
         feature_names = reversed(feature_names)
@@ -81,16 +82,16 @@ def get_predictions(model, dataset_dict):
     if args.DataSetArguments.n_classes > 1:
         val_y_arr = np.argmax(val_y_arr,axis=1)
         y_pred = np.argmax(y_pred,axis=1)
-    acc = accuracy_score(val_y_arr, y_pred)
-    precision = precision_score(val_y_arr, y_pred)
-    recall = recall_score(val_y_arr, y_pred)
-    f1 = f1_score(val_y_arr, y_pred)
-    with open(os.path.join(args.PlotUtilArguments.plot_dir, "metrics.txt"), "w") as f:
-        f.write(f"Accuracy: {acc}\n")
-        f.write(f"Precision: {precision}\n")
-        f.write(f"Recall: {recall}\n")
-        f.write(f"F1: {f1}\n")
-    logging.info(f"Accuracy: {acc}")
+    # acc = accuracy_score(val_y_arr, y_pred)
+    # precision = precision_score(val_y_arr, y_pred)
+    # recall = recall_score(val_y_arr, y_pred)
+    # f1 = f1_score(val_y_arr, y_pred)
+    # with open(os.path.join(args.PlotUtilArguments.plot_dir, "metrics.txt"), "w") as f:
+    #     f.write(f"Accuracy: {acc}\n")
+    #     f.write(f"Precision: {precision}\n")
+    #     f.write(f"Recall: {recall}\n")
+    #     f.write(f"F1: {f1}\n")
+    # logging.info(f"Accuracy: {acc}")
     plots.plot_confusion_matrix(val_y_arr, y_pred)
 
 if __name__ == "__main__":
