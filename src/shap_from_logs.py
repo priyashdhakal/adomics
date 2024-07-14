@@ -32,7 +32,11 @@ def load_model(dataset_dict, hparams_dict):
     model.load_weights(weights_path)
     return model
 
-def get_shap_values(model, dataset_dict, biomarker_names_dict):
+def get_shap_values(model, dataset_dict, biomarker_names_dict, curr_class = None):
+    if curr_class is not None:
+        to_add = f"class_{curr_class}"
+    else:
+        to_add = ""
     key_values = list(dataset_dict.keys())
     print(f"Key Values: {key_values}")
     # explainer = shap.DeepExplainer(model, 
@@ -60,8 +64,8 @@ def get_shap_values(model, dataset_dict, biomarker_names_dict):
         feature_names = reversed(feature_names)
         with open(feature_names_save_path, "w") as f:
             f.write("\n".join(feature_names))
-        logging.info(f"Saving SHAP for dataset {key_values[i]} and index {PLOT_INDEX} and feature: {feature_name}")
-        plt.savefig(os.path.join(args.PlotUtilArguments.plot_dir, f"plot_{PLOT_INDEX}_{feature_name}.png"))
+        logging.info(f"Saving SHAP for dataset {key_values[i]} and index {PLOT_INDEX} and feature: {feature_name} and class: {to_add}")
+        plt.savefig(os.path.join(args.PlotUtilArguments.plot_dir, f"plot_{PLOT_INDEX}_{feature_name}_{to_add}.png"))
         plt.close()
     return shap_values
 
@@ -93,12 +97,58 @@ def get_predictions(model, dataset_dict):
     #     f.write(f"F1: {f1}\n")
     # logging.info(f"Accuracy: {acc}")
     plots.plot_confusion_matrix(val_y_arr, y_pred)
+def separate_dataset_dict(dataset_dict, n_classes = 5):
+    """
+    dataset_dict: 
+        - methy
+        - mirna
+        - mrna //these for all methy, mirna and mrna
+          -train
+          -test
+          -train_label
+          -test_label
+    
+    Need to separate this dataset into:
+    dataset_lbl_1_dict, dataset_lbl_2_dict, ..., dataset_lbl_n_dict
+
+
+    """
+    dataset_dict_arr = []
+    for i in range(n_classes):
+        curr_dataset_dict = {}
+        for dataset_name in dataset_dict:
+            curr_dataset_dict[dataset_name] = []
+            all_train_labels = dataset_dict[dataset_name][2].values
+            all_train_data = dataset_dict[dataset_name][0]
+            all_test_labels = dataset_dict[dataset_name][3].values
+            all_test_data = dataset_dict[dataset_name][1]
+            # get indices of all_train_labels where label is i
+            train_indices = np.where(all_train_labels == i)
+            test_indices = np.where(all_test_labels == i)
+            curr_dataset_dict[dataset_name] = [all_train_data[train_indices],
+                                               all_test_data[test_indices],
+                                               all_train_labels[train_indices],
+                                               all_test_labels[test_indices]]
+        
+        dataset_dict_arr.append(curr_dataset_dict)
+    return dataset_dict_arr
+
+    
+
 
 if __name__ == "__main__":
     dataset_dict, biomarker_names_dict  = dataloader.get_train_test_data()
     hparams_dict = get_hparams()
-    model = load_model(dataset_dict, hparams_dict)
-    get_predictions(model, dataset_dict)
-    shap_values = get_shap_values(model, dataset_dict, biomarker_names_dict)
+    if args.DataSetArguments.data_type == "BRCA":
+        dataset_dict_arr = separate_dataset_dict(dataset_dict, args.DataSetArguments.n_classes)
+        for i, curr_dataset_dict in enumerate(dataset_dict_arr):
+            model = load_model(curr_dataset_dict, hparams_dict)
+            get_predictions(model, curr_dataset_dict)
+            shap_values = get_shap_values(model, curr_dataset_dict, biomarker_names_dict, i)
+            print(shap_values[0].shape, len(shap_values))
+    else:
+        model = load_model(dataset_dict, hparams_dict)
+        get_predictions(model, dataset_dict)
+        shap_values = get_shap_values(model, dataset_dict, biomarker_names_dict)
 
-    print(shap_values[0].shape, len(shap_values))
+        print(shap_values[0].shape, len(shap_values))
