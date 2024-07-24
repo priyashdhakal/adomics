@@ -1,0 +1,130 @@
+Evaluation Results for THCA
+
+
+Processing: mrna
+Confusion Matrix:
+[[24  7]
+ [ 9 98]]
+Accuracy: 0.8841
+Precision: 0.9333
+Recall: 0.9159
+F1 Score: 0.9245
+
+Processing: mirna
+Confusion Matrix:
+[[22  9]
+ [ 8 99]]
+Accuracy: 0.8768
+Precision: 0.9167
+Recall: 0.9252
+F1 Score: 0.9209
+
+Processing: methy
+Confusion Matrix:
+[[20 11]
+ [ 8 99]]
+Accuracy: 0.8623
+Precision: 0.9000
+Recall: 0.9252
+F1 Score: 0.9124
+
+Processing: methy_mirna
+Confusion Matrix:
+[[ 20  11]
+ [  5 102]]
+Accuracy: 0.8841
+Precision: 0.9027
+Recall: 0.9533
+F1 Score: 0.9273
+
+Processing: mirna_mrna
+Confusion Matrix:
+[[ 23   8]
+ [  7 100]]
+Accuracy: 0.8913
+Precision: 0.9259
+Recall: 0.9346
+F1 Score: 0.9302
+
+Processing: methy_mrna
+Confusion Matrix:
+[[ 23   8]
+ [  7 100]]
+Accuracy: 0.8913
+Precision: 0.9259
+Recall: 0.9346
+F1 Score: 0.9302
+
+Processing: methy_mirna_mrna
+Confusion Matrix:
+[[ 22   9]
+ [  7 100]]
+Accuracy: 0.8841
+Precision: 0.9174
+Recall: 0.9346
+F1 Score: 0.9259
+
+All results:
+
+mrna:
+  confusion_matrix:
+[[24  7]
+ [ 9 98]]
+  accuracy: 0.8841
+  precision: 0.9333
+  recall: 0.9159
+  f1_score: 0.9245
+
+mirna:
+  confusion_matrix:
+[[22  9]
+ [ 8 99]]
+  accuracy: 0.8768
+  precision: 0.9167
+  recall: 0.9252
+  f1_score: 0.9209
+
+methy:
+  confusion_matrix:
+[[20 11]
+ [ 8 99]]
+  accuracy: 0.8623
+  precision: 0.9000
+  recall: 0.9252
+  f1_score: 0.9124
+
+methy_mirna:
+  confusion_matrix:
+[[ 20  11]
+ [  5 102]]
+  accuracy: 0.8841
+  precision: 0.9027
+  recall: 0.9533
+  f1_score: 0.9273
+
+mirna_mrna:
+  confusion_matrix:
+[[ 23   8]
+ [  7 100]]
+  accuracy: 0.8913
+  precision: 0.9259
+  recall: 0.9346
+  f1_score: 0.9302
+
+methy_mrna:
+  confusion_matrix:
+[[ 23   8]
+ [  7 100]]
+  accuracy: 0.8913
+  precision: 0.9259
+  recall: 0.9346
+  f1_score: 0.9302
+
+methy_mirna_mrna:
+  confusion_matrix:
+[[ 22   9]
+ [  7 100]]
+  accuracy: 0.8841
+  precision: 0.9174
+  recall: 0.9346
+  f1_score: 0.9259

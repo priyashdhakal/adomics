@@ -1,0 +1,130 @@
+Evaluation Results for ROSMAP
+
+
+Processing: mrna
+Confusion Matrix:
+[[46  5]
+ [ 7 48]]
+Accuracy: 0.8868
+Precision: 0.9057
+Recall: 0.8727
+F1 Score: 0.8889
+
+Processing: mirna
+Confusion Matrix:
+[[47  4]
+ [16 39]]
+Accuracy: 0.8113
+Precision: 0.9070
+Recall: 0.7091
+F1 Score: 0.7959
+
+Processing: methy
+Confusion Matrix:
+[[37 14]
+ [20 35]]
+Accuracy: 0.6792
+Precision: 0.7143
+Recall: 0.6364
+F1 Score: 0.6731
+
+Processing: methy_mirna
+Confusion Matrix:
+[[47  4]
+ [11 44]]
+Accuracy: 0.8585
+Precision: 0.9167
+Recall: 0.8000
+F1 Score: 0.8544
+
+Processing: mirna_mrna
+Confusion Matrix:
+[[46  5]
+ [ 6 49]]
+Accuracy: 0.8962
+Precision: 0.9074
+Recall: 0.8909
+F1 Score: 0.8991
+
+Processing: methy_mrna
+Confusion Matrix:
+[[44  7]
+ [ 4 51]]
+Accuracy: 0.8962
+Precision: 0.8793
+Recall: 0.9273
+F1 Score: 0.9027
+
+Processing: methy_mirna_mrna
+Confusion Matrix:
+[[48  3]
+ [ 9 46]]
+Accuracy: 0.8868
+Precision: 0.9388
+Recall: 0.8364
+F1 Score: 0.8846
+
+All results:
+
+mrna:
+  confusion_matrix:
+[[46  5]
+ [ 7 48]]
+  accuracy: 0.8868
+  precision: 0.9057
+  recall: 0.8727
+  f1_score: 0.8889
+
+mirna:
+  confusion_matrix:
+[[47  4]
+ [16 39]]
+  accuracy: 0.8113
+  precision: 0.9070
+  recall: 0.7091
+  f1_score: 0.7959
+
+methy:
+  confusion_matrix:
+[[37 14]
+ [20 35]]
+  accuracy: 0.6792
+  precision: 0.7143
+  recall: 0.6364
+  f1_score: 0.6731
+
+methy_mirna:
+  confusion_matrix:
+[[47  4]
+ [11 44]]
+  accuracy: 0.8585
+  precision: 0.9167
+  recall: 0.8000
+  f1_score: 0.8544
+
+mirna_mrna:
+  confusion_matrix:
+[[46  5]
+ [ 6 49]]
+  accuracy: 0.8962
+  precision: 0.9074
+  recall: 0.8909
+  f1_score: 0.8991
+
+methy_mrna:
+  confusion_matrix:
+[[44  7]
+ [ 4 51]]
+  accuracy: 0.8962
+  precision: 0.8793
+  recall: 0.9273
+  f1_score: 0.9027
+
+methy_mirna_mrna:
+  confusion_matrix:
+[[48  3]
+ [ 9 46]]
+  accuracy: 0.8868
+  precision: 0.9388
+  recall: 0.8364
+  f1_score: 0.8846
