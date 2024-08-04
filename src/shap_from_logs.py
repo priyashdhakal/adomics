@@ -6,7 +6,7 @@ import shap
 import numpy as np
 import matplotlib.pyplot as plt
 import keras
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_curve, auc
 
 import arguments as args
 import dataloader 
@@ -80,7 +80,7 @@ def get_predictions(model, dataset_dict):
         val_y_arr = keras.utils.to_categorical(val_y_arr, args.DataSetArguments.n_classes)
     y_pred = model.predict(val_x_arr)
     # Draw ROC Curve 
-    
+    plots.plot_roc_curve(val_y_arr, y_pred)
     # Finish drawing ROC Curve
     y_pred = np.where(y_pred > 0.5, 1, 0) 
     if args.DataSetArguments.n_classes > 1:
@@ -97,6 +97,8 @@ def get_predictions(model, dataset_dict):
     #     f.write(f"F1: {f1}\n")
     # logging.info(f"Accuracy: {acc}")
     plots.plot_confusion_matrix(val_y_arr, y_pred)
+
+
 def separate_dataset_dict(dataset_dict, n_classes = 5):
     """
     dataset_dict: 
