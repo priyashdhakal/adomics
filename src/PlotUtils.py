@@ -13,6 +13,11 @@ if not os.path.exists(plots_dir):
     os.makedirs(plots_dir)
 
 def plot_roc_curve(y_true, y_pred, save_data = True):
+    if save_data:
+        logging.info(f"Raw Predictions {plots_dir}")
+        np.save(os.path.join(plots_dir, "raw_predictions.npy"), y_pred)
+        logging.info(f"True Labels saved to {plots_dir}")
+        np.save(os.path.join(plots_dir, "true_labels.npy"), y_true)
     fpr, tpr, _ = roc_curve(y_true, y_pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()
@@ -29,11 +34,7 @@ def plot_roc_curve(y_true, y_pred, save_data = True):
     plt.savefig(os.path.join(plots_dir, "roc_curve.png"))
     plt.clf()
     logging.info(f"ROC Curve saved to {plots_dir}")
-    if save_data:
-        logging.info(f"Raw Predictions {plots_dir}")
-        np.save(os.path.join(plots_dir, "raw_predictions.npy"), y_pred)
-        logging.info(f"True Labels saved to {plots_dir}")
-        np.save(os.path.join(plots_dir, "true_labels.npy"), y_true)
+
     return True
 
 def plot_history(history):

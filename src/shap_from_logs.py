@@ -143,6 +143,9 @@ if __name__ == "__main__":
     hparams_dict = get_hparams()
     if args.DataSetArguments.data_type == "BRCA":
         dataset_dict_arr = separate_dataset_dict(dataset_dict, args.DataSetArguments.n_classes)
+        # model = load_model(dataset_dict, hparams_dict)
+        # get_predictions(model, dataset_dict)
+        # raise SystemError("Exitting the program After saving the predictions")
         for i, curr_dataset_dict in enumerate(dataset_dict_arr):
             model = load_model(curr_dataset_dict, hparams_dict)
             get_predictions(model, curr_dataset_dict)

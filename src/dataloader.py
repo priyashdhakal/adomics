@@ -21,6 +21,14 @@ def get_df():
     return df_dict
 
 def get_train_test(df):
+    """
+    TODO: If K-Fold Cross validation is required, it should take two more parameters: 
+    1. k_fold(bool): use K-Fold or not 
+    2. k(int): Number of folds
+    If number of folds is given, this function should return a list of tuples of train and test data for that 
+    fold. 
+    Also, it should take into account that the randomness is maintained and is reproducible.
+    """
     train_df = df[df['Split']==1].drop('Split', axis=1)
     test_df = df[df['Split']==0].drop('Split', axis=1)
     y_train = train_df['Label']
