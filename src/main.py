@@ -1,30 +1,27 @@
+seed = 123
+import numpy as np 
+import tensorflow as tf 
+import keras
+np.random.seed(seed)
+tf.random.set_seed(seed)
+keras.utils.set_random_seed(seed)
 import arguments as args 
 import dataloader 
 import logging 
 logging.getLogger().setLevel(logging.INFO)
 from model import get_model
 from tensorflow.keras.callbacks import EarlyStopping
-import numpy as np 
-import tensorflow as tf 
-import keras
+
 from sklearn.metrics import accuracy_score
 import os
-seed = 123
-np.random.seed(seed)
-tf.random.set_seed(seed)
-keras.utils.set_random_seed(seed)
+
 import optuna
 import json
-import PlotUtils as plots
+
 
 
 
 BEST_ACCURACY = 0
-if not os.path.exists(args.OptunaArguments.weights_path_root):
-    logging.info(f"Creating directory {args.OptunaArguments.weights_path_root}")
-    os.makedirs(args.OptunaArguments.weights_path_root)
-else:
-    logging.critical(f"Directory {args.OptunaArguments.weights_path_root} already exists, Files can be replaced")
 
 def get_callbacks():
     early_stopping_callback = EarlyStopping(monitor= args.TrainingArguments.monitor,
@@ -33,6 +30,7 @@ def get_callbacks():
     return [early_stopping_callback]
 
 def train_model(dataset_dict, hparams_dict):
+    import PlotUtils as plots
     model = get_model(dataset_dict, hparams_dict)
     train_X_arr = []
     for feature_name in args.DataSetArguments.feature_names:
@@ -109,22 +107,35 @@ def objective(trial):
     
     
 if __name__ == "__main__":
-    dataset_dict, _  = dataloader.get_train_test_data()
-    for feature_name, (X_train, X_test, y_train, y_test) in dataset_dict.items():
-        logging.info(f"Feature {feature_name} has shape {X_train.shape}")
-    if args.OptunaArguments.use_optuna and args.TrainingArguments.train:
-        study = optuna.create_study(direction=args.OptunaArguments.direction)
-        study.optimize(objective, n_trials=args.OptunaArguments.n_trials)
-        logging.info(f"Best trial: {study.best_trial}")
-        logging.info(f"Saving Parameters")
-        args.export_as_json()
-    else:
-        best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, "best_params.json")
-        if not os.path.exists(best_params_filepath):
-            raise ValueError(f"File {best_params_filepath} not found")
-        with open(best_params_filepath, "r") as f:
-            best_params = json.load(f)
-        
-        acc = train_model(dataset_dict, best_params)
-        logging.info(f"Accuracy: {acc}")
+    n_folds = 5
+    for fold_no in range(n_folds):
+        ########################################################
+        args.OptunaArguments.weights_path_root = f"{args.OptunaArguments.weights_path_root}/{fold_no}"
+        args.PlotUtilArguments.plot_dir =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
+        print(f"Plot Dir is: {args.PlotUtilArguments.plot_dir}")
+        raise SystemExit
+        if not os.path.exists(args.OptunaArguments.weights_path_root):
+            logging.info(f"Creating directory {args.OptunaArguments.weights_path_root}")
+            os.makedirs(args.OptunaArguments.weights_path_root)
+        else:
+            logging.critical(f"Directory {args.OptunaArguments.weights_path_root} already exists, Files can be replaced")
+        ######################################################################
+        dataset_dict, _  = dataloader.get_train_test_data(n_folds, fold_no)
+        for feature_name, (X_train, X_test, y_train, y_test) in dataset_dict.items():
+            logging.info(f"Feature {feature_name} has shape {X_train.shape}")
+        if args.OptunaArguments.use_optuna and args.TrainingArguments.train:
+            study = optuna.create_study(direction=args.OptunaArguments.direction)
+            study.optimize(objective, n_trials=args.OptunaArguments.n_trials)
+            logging.info(f"Best trial: {study.best_trial}")
+            logging.info(f"Saving Parameters")
+            args.export_as_json()
+        else:
+            best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, f"{fold_no}_best_params.json")
+            if not os.path.exists(best_params_filepath):
+                raise ValueError(f"File {best_params_filepath} not found")
+            with open(best_params_filepath, "r") as f:
+                best_params = json.load(f)
+            
+            acc = train_model(dataset_dict, best_params)
+            logging.info(f"Accuracy: {acc}")
     

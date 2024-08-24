@@ -1,3 +1,5 @@
+import random
+random.seed(100)
 import arguments as args 
 import pandas as pd
 import os
@@ -7,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 import tqdm
 from tqdm import trange
 import pickle
+from collections import defaultdict
 
 def get_df():
     base_path = args.DataSetArguments.data_root
@@ -20,7 +23,7 @@ def get_df():
         df_dict[feature] = df
     return df_dict
 
-def get_train_test(df):
+def get_train_test(df, k_fold = False, n_folds = 5, test_fold = 1):
     """
     TODO: If K-Fold Cross validation is required, it should take two more parameters: 
     1. k_fold(bool): use K-Fold or not 
@@ -29,11 +32,37 @@ def get_train_test(df):
     fold. 
     Also, it should take into account that the randomness is maintained and is reproducible.
     """
-    train_df = df[df['Split']==1].drop('Split', axis=1)
-    test_df = df[df['Split']==0].drop('Split', axis=1)
-    y_train = train_df['Label']
-    y_test = test_df['Label']
-    return train_df.drop('Label', axis=1), test_df.drop('Label', axis=1), y_train, y_test
+    
+    if not k_fold:
+        train_df = df[df['Split']==1].drop('Split', axis=1)
+        test_df = df[df['Split']==0].drop('Split', axis=1)
+        y_train = train_df['Label']
+        y_test = test_df['Label']
+        return train_df.drop('Label', axis=1), test_df.drop('Label', axis=1), y_train, y_test
+    if n_folds-1 <test_fold:
+        raise ValueError("Test fold should be less than n_folds-1")
+    df = df[df['Split']==1].drop('Split', axis=1)
+    y = df['Label']
+    len_ = len(df)
+    indices = list(range(len_))
+    random.shuffle(indices)
+    fold_indices_dict = defaultdict(list)
+    for fold_no in range(n_folds):
+        for val in indices:
+            if val%n_folds == fold_no:
+                if fold_no == test_fold:
+                    fold_indices_dict['val'].append(val)
+                else:
+                    fold_indices_dict['train'].append(val)
+
+    train_indices = fold_indices_dict['train']
+    val_indices = fold_indices_dict['val']
+    train_df = df.iloc[train_indices]
+    test_df = df.iloc[val_indices]
+    y_train = y.iloc[train_indices]
+    y_test = y.iloc[val_indices]
+    return train_df.drop('Label', axis = 1), test_df.drop('Label', axis = 1), y_train, y_test, df.drop('Label', axis = 1) #last for getting correlation
+
 
 def get_cache_filepath(feature_name):
     data_type = args.DataSetArguments.data_type
@@ -61,10 +90,13 @@ def correlation(dataset, threshold, feature_name):
         pickle.dump(col_corr, f)
     return col_corr
 
-def preprocess_data(df, feature_name):
-    train_df, test_df, y_train, y_test = get_train_test(df)
+def preprocess_data(df, feature_name, n_folds, fold_no):
+    k_fold = False
+    if n_folds > 1:
+        k_fold = True 
+    train_df, test_df, y_train, y_test, df = get_train_test(df, k_fold = k_fold, n_folds = n_folds, test_fold = fold_no)
     logging.info("finding correlation")
-    corr_features = correlation(train_df, 0.85, feature_name)
+    corr_features = correlation(df, 0.85, feature_name)
     logging.info(f'Correlated features: {len(corr_features)}')
     train_df.drop(corr_features, axis=1, inplace=True)
     test_df.drop(corr_features, axis=1, inplace=True)
@@ -74,22 +106,18 @@ def preprocess_data(df, feature_name):
     test_scaled = scaler.transform(test_df)
     return train_scaled, test_scaled, y_train, y_test, biomarker_names_arr
 
-def get_train_test_data():
+def get_train_test_data(n_folds, fold_no):
     df_dict = get_df()
     train_test_data = {}
     biomarker_names_dict = {}
     for feature, df in df_dict.items():
-        train_scaled, test_scaled, y_train, y_test, biomarker_names_arr = preprocess_data(df, feature_name = feature)
+        train_scaled, test_scaled, y_train, y_test, biomarker_names_arr = preprocess_data(df, feature_name = feature, n_folds = n_folds, fold_no = fold_no)
         train_test_data[feature] = (train_scaled, test_scaled, y_train, y_test)
         biomarker_names_dict[feature] = biomarker_names_arr
     return train_test_data, biomarker_names_dict
 if __name__ == "__main__":
     df_dict = get_df()
     for feature, df in df_dict.items():
-        train_scaled, test_scaled, y_train, y_test = preprocess_data(df, feature_name = feature)
-        logging.info(f"Preprocessed {feature} data")
-        logging.info(f"Train shape: {train_scaled.shape}")
-        logging.info(f"Test shape: {test_scaled.shape}")
-        logging.info(f"Train labels: {y_train.shape}")
-        logging.info(f"Test labels: {y_test.shape}")
-        logging.info("\n")
+        train_df, test_df, y_train, y_test = get_train_test(df, k_fold = True, n_folds = 5, test_fold = 4)
+        print(len(list(train_df.columns)))
+        print(train_df.iloc[1])

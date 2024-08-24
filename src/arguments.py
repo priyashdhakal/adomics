@@ -38,7 +38,7 @@ class DataSetArguments:
         raise ValueError(f"Data type must be one of {allowed_data_types}")
     n_classes:int = 1
     data_root:str = "/home/dhakal/MoBI/data"
-    feature_names = ["methy"]# ["methy", "mirna", "mrna"] #, "methy", "mrna"] order: ["methy", "mirna", "mrna"]
+    feature_names = ["methy", "mirna", "mrna"]# ["methy", "mirna", "mrna"] #, "methy", "mrna"] order: ["methy", "mirna", "mrna"]
 
 @dataclass
 class ModelArguments:
@@ -64,13 +64,12 @@ class OptunaArguments:
     use_optuna:bool = True 
     n_trials:int = 10000
     feature_names_str = "_".join(DataSetArguments.feature_names)
-    weights_path_root:str = f"/home/dhakal/MoBI/src/logs/logs_{DataSetArguments.data_type}_{feature_names_str}"
+    weights_path_root:str = f"/home/dhakal/MoBI/src/klogs/logs_{DataSetArguments.data_type}_{feature_names_str}"
     direction:str = "maximize"
 
 class PlotUtilArguments:
     plot_status:bool = True
-    plot_dir:str = os.path.join(OptunaArguments.weights_path_root, "plots")
-
+    plot_dir:str = None
 # Export all dataclasses as json to weights_path_root
 def export_as_json():
     with open(os.path.join(OptunaArguments.weights_path_root, "data_args.json"), "w") as f:
