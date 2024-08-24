@@ -81,7 +81,7 @@ def train_model(dataset_dict, hparams_dict):
         best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, "best_params.json")
         with open(best_params_filepath, "w") as f:
             json.dump(hparams_dict, f)
-            f.write(f"accuracy: {acc}")
+            # f.write(f"accuracy: {acc}")
         BEST_ACCURACY = acc
     logging.info(f"Accuracy: {acc}")
     return acc
@@ -113,7 +113,6 @@ if __name__ == "__main__":
         args.OptunaArguments.weights_path_root = f"{args.OptunaArguments.weights_path_root}/{fold_no}"
         args.PlotUtilArguments.plot_dir =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
         print(f"Plot Dir is: {args.PlotUtilArguments.plot_dir}")
-        raise SystemExit
         if not os.path.exists(args.OptunaArguments.weights_path_root):
             logging.info(f"Creating directory {args.OptunaArguments.weights_path_root}")
             os.makedirs(args.OptunaArguments.weights_path_root)
