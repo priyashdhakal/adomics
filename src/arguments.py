@@ -62,7 +62,7 @@ class TrainingArguments:
 @dataclass 
 class OptunaArguments:
     use_optuna:bool = True 
-    n_trials:int = 10000
+    n_trials:int = 1000
     feature_names_str = "_".join(DataSetArguments.feature_names)
     weights_path_root:str = f"/home/dhakal/MoBI/src/klogs/logs_{DataSetArguments.data_type}_{feature_names_str}"
     direction:str = "maximize"
