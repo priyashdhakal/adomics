@@ -33,13 +33,12 @@ class DataSetArguments:
     But take care of things like n_classes that should be written according to the outputs of the dataset. 
     For example, in the case of ROSMAP it is 1 (i.e binary classification)
     """
-    data_type:str = "ROSMAP"
+    data_type:str = "BRCA"
     if data_type not in allowed_data_types:
         raise ValueError(f"Data type must be one of {allowed_data_types}")
-    n_classes:int = 1
+    n_classes:int = 5
     data_root:str = "/home/dhakal/MoBI/data"
-    feature_names = ["methy", "mirna", "mrna"]# ["methy", "mirna", "mrna"] #, "methy", "mrna"] order: ["methy", "mirna", "mrna"]
-
+    feature_names = ["methy", "mirna", "mrna"]# ["methy", "mirna", "mrna"] 
 @dataclass
 class ModelArguments:
     last_layer_activation:str = "sigmoid" if DataSetArguments.n_classes == 1 else "softmax"

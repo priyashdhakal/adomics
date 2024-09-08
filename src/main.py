@@ -108,9 +108,10 @@ def objective(trial):
     
 if __name__ == "__main__":
     n_folds = 5
+    old_path_root = args.OptunaArguments.weights_path_root
     for fold_no in range(n_folds):
         ########################################################
-        args.OptunaArguments.weights_path_root = f"{args.OptunaArguments.weights_path_root}/{fold_no}"
+        args.OptunaArguments.weights_path_root = f"{old_path_root}/{fold_no}"
         args.PlotUtilArguments.plot_dir =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
         print(f"Plot Dir is: {args.PlotUtilArguments.plot_dir}")
         if not os.path.exists(args.OptunaArguments.weights_path_root):
