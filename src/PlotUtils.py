@@ -7,12 +7,12 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import numpy as np 
 from sklearn.metrics import roc_curve, auc 
 
-plots_dir = args.PlotUtilArguments.plot_dir
-if not os.path.exists(plots_dir):
-    logging.info(f"Creating directory {plots_dir}")
-    os.makedirs(plots_dir)
+# plots_dir = args.PlotUtilArguments.plot_dir
+# if not os.path.exists(plots_dir):
+#     logging.info(f"Creating directory {plots_dir}")
+#     os.makedirs(plots_dir)
 
-def plot_roc_curve(y_true, y_pred, save_data = True):
+def plot_roc_curve(y_true, y_pred, plots_dir, save_data = True):
     if save_data:
         logging.info(f"Raw Predictions {plots_dir}")
         np.save(os.path.join(plots_dir, "raw_predictions.npy"), y_pred)
@@ -37,7 +37,7 @@ def plot_roc_curve(y_true, y_pred, save_data = True):
 
     return True
 
-def plot_history(history):
+def plot_history(history, plots_dir):
     """
     Save two different plots, 1 for loss and another for accuracy from history object 
     returned by tensorflow model.fit
@@ -62,7 +62,7 @@ def plot_history(history):
     logging.info(f"Plots saved to {plots_dir}")
     return True
 
-def plot_confusion_matrix(y_true, y_pred):
+def plot_confusion_matrix(y_true, y_pred, plots_dir):
     cm = confusion_matrix(y_true, y_pred)
     with open(os.path.join(plots_dir, "confusion_matrix.txt"), "w") as f:
         f.write(str(cm))

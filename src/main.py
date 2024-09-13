@@ -14,6 +14,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 from sklearn.metrics import accuracy_score
 import os
+from copy import deepcopy
 
 import optuna
 import json
@@ -68,14 +69,14 @@ def train_model(dataset_dict, hparams_dict):
         y_pred = np.argmax(y_pred,axis=1)
     acc = accuracy_score(val_y_arr, y_pred)
     if args.PlotUtilArguments.plot_status and not args.TrainingArguments.train:
-        plots.plot_confusion_matrix(val_y_arr, y_pred)
+        plots.plot_confusion_matrix(val_y_arr, y_pred, args.PlotUtilArguments.plot_dir)
     if not args.TrainingArguments.train:
         return acc
     global BEST_ACCURACY
     if acc > BEST_ACCURACY:
         if args.PlotUtilArguments.plot_status:
             logging.info(f"Plotting History for best model")
-            plots.plot_history(history)
+            plots.plot_history(history, args.PlotUtilArguments.plot_dir)
         weights_path = os.path.join(args.OptunaArguments.weights_path_root, "best_weights.h5")
         model.save(weights_path) #TODO: replace this with proper name
         best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, "best_params.json")
@@ -113,6 +114,9 @@ if __name__ == "__main__":
         ########################################################
         args.OptunaArguments.weights_path_root = f"{old_path_root}/{fold_no}"
         args.PlotUtilArguments.plot_dir =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
+        if not os.path.exists(args.PlotUtilArguments.plot_dir):
+            logging.info(f"Creating directory {args.PlotUtilArguments.plot_dir}")
+            os.makedirs(args.PlotUtilArguments.plot_dir)
         print(f"Plot Dir is: {args.PlotUtilArguments.plot_dir}")
         if not os.path.exists(args.OptunaArguments.weights_path_root):
             logging.info(f"Creating directory {args.OptunaArguments.weights_path_root}")

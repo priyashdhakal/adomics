@@ -49,7 +49,7 @@ class ModelArguments:
 @dataclass
 class TrainingArguments:
     train:bool = True
-    epochs:int = 500
+    epochs:int = 5
     batch_size:int = 32
 
     # callback arguments: 
@@ -61,7 +61,7 @@ class TrainingArguments:
 @dataclass 
 class OptunaArguments:
     use_optuna:bool = True 
-    n_trials:int = 1000
+    n_trials:int = 2
     feature_names_str = "_".join(DataSetArguments.feature_names)
     weights_path_root:str = f"/home/dhakal/MoBI/src/klogs/logs_{DataSetArguments.data_type}_{feature_names_str}"
     direction:str = "maximize"
