@@ -23,6 +23,7 @@ import json
 
 
 BEST_ACCURACY = 0
+PLOTTING_DIR = ""
 
 def get_callbacks():
     early_stopping_callback = EarlyStopping(monitor= args.TrainingArguments.monitor,
@@ -69,14 +70,14 @@ def train_model(dataset_dict, hparams_dict):
         y_pred = np.argmax(y_pred,axis=1)
     acc = accuracy_score(val_y_arr, y_pred)
     if args.PlotUtilArguments.plot_status and not args.TrainingArguments.train:
-        plots.plot_confusion_matrix(val_y_arr, y_pred, args.PlotUtilArguments.plot_dir)
+        plots.plot_confusion_matrix(val_y_arr, y_pred, PLOTTING_DIR)
     if not args.TrainingArguments.train:
         return acc
     global BEST_ACCURACY
     if acc > BEST_ACCURACY:
         if args.PlotUtilArguments.plot_status:
             logging.info(f"Plotting History for best model")
-            plots.plot_history(history, args.PlotUtilArguments.plot_dir)
+            plots.plot_history(history, PLOTTING_DIR)
         weights_path = os.path.join(args.OptunaArguments.weights_path_root, "best_weights.h5")
         model.save(weights_path) #TODO: replace this with proper name
         best_params_filepath = os.path.join(args.OptunaArguments.weights_path_root, "best_params.json")
@@ -113,11 +114,10 @@ if __name__ == "__main__":
     for fold_no in range(n_folds):
         ########################################################
         args.OptunaArguments.weights_path_root = f"{old_path_root}/{fold_no}"
-        args.PlotUtilArguments.plot_dir =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
-        if not os.path.exists(args.PlotUtilArguments.plot_dir):
-            logging.info(f"Creating directory {args.PlotUtilArguments.plot_dir}")
-            os.makedirs(args.PlotUtilArguments.plot_dir)
-        print(f"Plot Dir is: {args.PlotUtilArguments.plot_dir}")
+        PLOTTING_DIR =  os.path.join(args.OptunaArguments.weights_path_root, "plots")
+        if not os.path.exists(PLOTTING_DIR):
+            logging.info(f"Creating directory {PLOTTING_DIR}")
+            os.makedirs(PLOTTING_DIR)
         if not os.path.exists(args.OptunaArguments.weights_path_root):
             logging.info(f"Creating directory {args.OptunaArguments.weights_path_root}")
             os.makedirs(args.OptunaArguments.weights_path_root)
