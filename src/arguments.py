@@ -38,7 +38,7 @@ class DataSetArguments:
         raise ValueError(f"Data type must be one of {allowed_data_types}")
     n_classes:int = 5
     data_root:str = "/home/dhakal/MoBI/data"
-    feature_names = ["methy","mirna","mrna"]# ["methy", "mirna", "mrna"] #, "methy", "mrna"] order: ["methy", "mirna", "mrna"]
+    feature_names = ["methy"]# ["methy", "mirna", "mrna"] #, "methy", "mrna"] order: ["methy", "mirna", "mrna"]
 
 @dataclass
 class ModelArguments:

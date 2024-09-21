@@ -18,6 +18,9 @@ def plot_roc_curve(y_true, y_pred, save_data = True):
         np.save(os.path.join(plots_dir, "raw_predictions.npy"), y_pred)
         logging.info(f"True Labels saved to {plots_dir}")
         np.save(os.path.join(plots_dir, "true_labels.npy"), y_true)
+    if args.DataSetArguments.n_classes >1:
+        logging.info(f"Cannot plot ROC curve for multi-class classification")
+        return False
     fpr, tpr, _ = roc_curve(y_true, y_pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()

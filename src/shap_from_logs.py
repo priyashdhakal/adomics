@@ -80,8 +80,8 @@ def get_predictions(model, dataset_dict):
         val_y_arr = keras.utils.to_categorical(val_y_arr, args.DataSetArguments.n_classes)
     y_pred = model.predict(val_x_arr)
     # Draw ROC Curve 
-    if not args.data_type == "BRCA":
-        plots.plot_roc_curve(val_y_arr, y_pred)
+    # if not args.DataSetArguments.data_type == "BRCA":
+    plots.plot_roc_curve(val_y_arr, y_pred)
     # Finish drawing ROC Curve
     y_pred = np.where(y_pred > 0.5, 1, 0) 
     if args.DataSetArguments.n_classes > 1:
