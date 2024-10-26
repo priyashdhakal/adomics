@@ -3,6 +3,8 @@ from tensorflow.keras.layers import Dense, Dropout, Input, Concatenate, Conv1D, 
 from tensorflow.keras import regularizers
 from tensorflow.keras.models import Model
 import logging 
+from sklearn.utils import class_weight
+import numpy as np
 logging.getLogger().setLevel(logging.INFO)
 
 def create_branch(input_layer):
@@ -15,8 +17,12 @@ def create_branch(input_layer):
     return dense_methy
 
 def get_model(dataset_dict, hparams_dict:dict):
+    """
+    TODO: need to add class weight in categorical crossentropy.
+    """
     input_branch_arr = []
     feature_input_arr = []
+
     for feature_name in args.DataSetArguments.feature_names:
         if feature_name not in dataset_dict:
             raise ValueError(f"Feature {feature_name} not found in dataset_dict")

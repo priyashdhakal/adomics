@@ -6,6 +6,7 @@ from model import get_model
 from tensorflow.keras.callbacks import EarlyStopping
 import numpy as np 
 import tensorflow as tf 
+from sklearn.utils import class_weight
 import keras
 from sklearn.metrics import accuracy_score
 import os
@@ -50,12 +51,16 @@ def train_model(dataset_dict, hparams_dict):
     if args.DataSetArguments.n_classes > 1:
         train_y_arr = keras.utils.to_categorical(train_y_arr, args.DataSetArguments.n_classes)
         val_y_arr = keras.utils.to_categorical(val_y_arr, args.DataSetArguments.n_classes)
+    y_train_integers = np.argmax(train_y_arr, axis=1)
+    class_weights = class_weight.compute_class_weight('balanced', classes=np.unique(y_train_integers), y=y_train_integers)
+    class_weight_dict = dict(enumerate(class_weights))
     if args.TrainingArguments.train:
         history = model.fit(
             train_X_arr, 
             train_y_arr, 
             epochs=args.TrainingArguments.epochs, 
             batch_size=args.TrainingArguments.batch_size, 
+            class_weight=class_weight_dict,
             validation_data=(val_x_arr, val_y_arr),
             callbacks= get_callbacks()
         )
